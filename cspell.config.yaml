@@ -54,6 +54,7 @@ words:
   - paralleldrive
   - pinterest
   - pipedrive
+  - pkill
   - Posthog
   - postmarkapp
   - ratelimit
@@ -76,7 +77,9 @@ words:
   - trpc
   - tsbuildinfo
   - tseslint
+  - Turbopack
   - typecheck
   - Uploadthing
   - Upstash
   - usehooks
+  - xlcmsua

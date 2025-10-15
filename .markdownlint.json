@@ -4,5 +4,8 @@
   "no-inline-html": false,
   "no-space-in-emphasis": false,
   "no-duplicate-heading": false,
-  "code-block-style": false
+  "code-block-style": false,
+  "fenced-code-language": false,
+  "no-bare-urls": false,
+  "no-trailing-punctuation": false
 }
