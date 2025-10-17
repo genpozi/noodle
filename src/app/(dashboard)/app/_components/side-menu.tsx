@@ -35,7 +35,7 @@ const sideMenuStaticLinks = [
 ];
 
 export async function SideMenu() {
-  const modules = await api.modules.getUserModules();
+  const { items: modules } = await api.modules.getUserModules({ limit: 50 });
 
   return (
     <aside className="flex w-[200px] flex-col justify-between gap-8">

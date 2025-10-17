@@ -3,7 +3,7 @@ import { RecentModules } from './_components/recent-modules';
 import { WelcomeMessage } from './_components/welcome-message';
 
 export default async function DashboardHome() {
-  const modules = await api.modules.getUserModules();
+  const { items: modules } = await api.modules.getUserModules({ limit: 20 });
 
   return (
     <div className="flex flex-1 gap-6">

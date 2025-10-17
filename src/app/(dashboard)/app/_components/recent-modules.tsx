@@ -10,7 +10,7 @@ import { cn } from '@/utils/cn';
 import type { IconNames } from '@/primitives/icon';
 
 interface RecentModulesProps {
-  modules: RouterOutputs['modules']['getUserModules'];
+  modules: RouterOutputs['modules']['getUserModules']['items'];
 }
 
 export function RecentModules({ modules }: RecentModulesProps) {

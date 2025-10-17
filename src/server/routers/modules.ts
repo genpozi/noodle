@@ -6,6 +6,7 @@ import {
 } from '@/db/schema';
 import { TRPCError } from '@trpc/server';
 import { DrizzleError, and, eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 export const modulesRouter = createRouter({
   getById: protectedProcedure
@@ -42,14 +43,48 @@ export const modulesRouter = createRouter({
       }
     }),
 
-  getUserModules: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.id;
+  getUserModules: protectedProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().min(1).max(100).default(20),
+          cursor: z.string().uuid().optional(),
+        })
+        .optional()
+        .default({ limit: 20 }),
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.user.id;
+      const { limit, cursor } = input;
 
-    return ctx.db.query.modulesTable.findMany({
-      where: (t, { eq }) => eq(t.user_id, userId),
-      orderBy: (t, { desc }) => desc(t.lastVisited),
-    });
-  }),
+      // Get cursor module's lastVisited timestamp if cursor is provided
+      let cursorDate: Date | undefined;
+      if (cursor) {
+        const cursorModule = await ctx.db.query.modulesTable.findFirst({
+          where: (t, { eq }) => eq(t.id, cursor),
+        });
+        cursorDate = cursorModule?.lastVisited;
+      }
+
+      const modules = await ctx.db.query.modulesTable.findMany({
+        where: (t, { eq, and, lt }) => {
+          if (cursorDate) {
+            return and(eq(t.user_id, userId), lt(t.lastVisited, cursorDate));
+          }
+          return eq(t.user_id, userId);
+        },
+        orderBy: (t, { desc }) => desc(t.lastVisited),
+        limit: limit + 1,
+      });
+
+      const hasMore = modules.length > limit;
+      const items = hasMore ? modules.slice(0, -1) : modules;
+
+      return {
+        items,
+        nextCursor: hasMore ? items[items.length - 1]?.id : undefined,
+      };
+    }),
 
   create: protectedProcedure
     .input(
@@ -124,7 +159,10 @@ export const modulesRouter = createRouter({
       });
 
       if (!existingModule) {
-        throw new Error('Module not found');
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Module not found',
+        });
       }
 
       return ctx.db

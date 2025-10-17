@@ -3,6 +3,7 @@ import { createRouter, publicProcedure } from '../trpc';
 import EarlyAccessJoinedEmail from '@/emails/templates/early-access-joined';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+import { rateLimit, rateLimitPresets } from '@/lib/rate-limit';
 
 const nonHumanEmailDomains = [
   '@no-reply',
@@ -169,6 +170,21 @@ export const earlyAccessRouter = createRouter({
     .mutation(async ({ ctx, input }) => {
       const { email, name, reason } = input;
       const { db, resend } = ctx;
+
+      // Rate limit by email address
+      const { success, reset } = await rateLimit(
+        `early_access:${email}`,
+        rateLimitPresets.strict.limit,
+        rateLimitPresets.strict.window,
+      );
+
+      if (!success) {
+        const resetDate = new Date(reset);
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: `Too many requests. Please try again after ${resetDate.toLocaleTimeString()}.`,
+        });
+      }
 
       const emailHuman = isLikelyHuman(email);
 

@@ -9,6 +9,7 @@ ignorePaths:
   - drizzle
   - '**/*.svg'
   - .vscode/extensions.json
+  - .devcontainer
   - public
   - tsconfig.tsbuildinfo
   - branch_out
@@ -21,6 +22,7 @@ words:
   - autoresponder
   - bcdfghj
   - bigcommerce
+  - bullmq
   - callees
   - classname
   - clsx
@@ -32,6 +34,7 @@ words:
   - facebookmail
   - freshdesk
   - frontmatter
+  - gtag
   - healthcheck
   - helpdesk
   - helpscout
@@ -49,6 +52,7 @@ words:
   - mitigations
   - neondatabase
   - nextjs
+  - nosniff
   - noreplys
   - packagejson
   - paralleldrive
@@ -59,10 +63,14 @@ words:
   - postmarkapp
   - ratelimit
   - redditmail
+  - refetches
   - Registrator
+  - Runbook
+  - SAMEORIGIN
   - sendgrid
   - sendinblue
   - serviceworker
+  - setex
   - Shadcn
   - Signin
   - Signup
